@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-[#050505]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURA // Premium Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        gold: {
+                            50: '#fdfbf7', 100: '#fbf7ed', 200: '#f4e8d1', 300: '#ecd5b1',
+                            400: '#dcaf77', 500: '#cb8b42', 600: '#bd7736', 700: '#9e5e2b',
+                            800: '#7f4b25', 900: '#683e20', 950: '#391f0e'
+                        },
+                        dark: {
+                            900: '#050505',
+                            800: '#0d0d0d',
+                            700: '#141414',
+                            600: '#1a1a1a',
+                            500: '#262626'
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050505;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #262626;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #cb8b42;
+        }
+        
+        /* Glassmorphism Classes */
+        .glass {
+            background: rgba(13, 13, 13, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        .glass-premium {
+            background: linear-gradient(135deg, rgba(20, 20, 20, 0.8) 0%, rgba(10, 10, 10, 0.9) 100%);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(203, 139, 66, 0.15);
+        }
+        
+        /* Input Transitions */
+        .premium-input {
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .premium-input:focus {
+            border-color: #cb8b42;
+            box-shadow: 0 0 15px rgba(203, 139, 66, 0.15);
+            outline: none;
+        }
+    </style>
+</head>
+<body class="h-full text-gray-200 antialiased overflow-x-hidden font-sans">
+
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-gold-950/20 rounded-full blur-[120px] animate-pulse-slow"></div>
+        <div class="absolute top-1/3 -right-40 w-96 h-96 bg-purple-950/10 rounded-full blur-[120px] animate-pulse-slow" style="animation-delay: 2s;"></div>
+    </div>
+
+    <div id="auth-page" class="relative z-10 min-h-screen flex items-center justify-center p-4 generic-transition">
+        <div class="w-full max-w-md">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-14 h-14 rounded-full glass border border-gold-500/30 mb-3 shadow-lg shadow-gold-950/20">
+                    <span class="text-2xl font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-gold-400 to-amber-200">A</span>
+                </div>
+                <h1 class="text-2xl font-bold tracking-widest text-white">N A S I R</h1>
+                <p class="text-xs text-gray-500 uppercase tracking-widest mt-1">Luxury Asset Management</p>
+            </div>
+
+            <div class="glass rounded-2xl p-8 shadow-2xl border border-white/5 relative overflow-hidden">
+                <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gold-500/50 to-transparent"></div>
+                
+                <h2 class="text-xl font-medium text-white mb-2">Welcome Back</h2>
+                <p class="text-sm text-gray-400 mb-6">Enter your credentials to access the secure vault.</p>
+
+                <form id="login-form" onsubmit="handleLogin(event)" class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2" for="username">Username</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
+                                <i class="fa-regular fa-user text-sm"></i>
+                            </span>
+                            <input type="text" id="username" required class="w-full premium-input rounded-xl py-3 pl-10 pr-4 text-sm text-white" placeholder="admin">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2" for="password">Password</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
+                                <i class="fa-regular fa-lock text-sm"></i>
+                            </span>
+                            <input type="password" id="password" required class="w-full premium-input rounded-xl py-3 pl-10 pr-4 text-sm text-white" placeholder="••••••••">
+                        </div>
+                    </div>
+
+                    <div id="auth-error" class="hidden rounded-xl bg-red-950/30 border border-red-500/30 p-3 text-xs text-red-400 flex items-start gap-2.5 animate-fadeIn">
+                        <i class="fa-solid fa-circle-exclamation mt-0.5 shrink-0"></i>
+                        <span id="auth-error-msg">Authentication failed.</span>
+                    </div>
+
+                    <button type="submit" class="w-full mt-2 relative group overflow-hidden rounded-xl bg-gradient-to-r from-gold-600 to-gold-500 py-3 px-4 font-semibold text-sm text-black shadow-lg shadow-gold-600/20 hover:shadow-gold-500/40 transition-all duration-300 transform hover:-translate-y-0.5">
+                        <div class="absolute inset-0 w-full h-full bg-white/20 transform -skews-x-12 -translate-x-full group-hover:animate-[shine_0.75s_ease-in-out]"></div>
+                        Sign In Securely
+                    </button>
+                </form>
+            </div>
+            <div class="text-center mt-6">
+                <p class="text-xs text-gray-600">Secure AES-256 Mock Simulation Environment</p>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="dashboard-layout" class="hidden relative z-10 min-h-screen flex flex-col md:flex-row">
+        
+        <aside class="w-full md:w-64 bg-[#090909] border-b md:border-b-0 md:border-r border-white/5 flex flex-col shrink-0">
+            <div class="h-20 flex items-center px-6 border-b border-white/5 gap-3">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-gold-600 to-gold-400 flex items-center justify-center font-bold text-black text-sm tracking-tighter">Ω</div>
+                <div>
+                    <span class="font-bold tracking-widest text-white text-sm block">NASIR</span>
+                    <span class="text-[10px] text-gold-400 tracking-wider font-semibold uppercase">Management</span>
+                </div>
+            </div>
+
+            <nav class="flex-1 px-4 py-6 space-y-1.5">
+                <a href="#" class="flex items-center gap-3.5 px-4 py-3 rounded-xl bg-gradient-to-r from-gold-950/40 to-transparent border-l-2 border-gold-500 text-white font-medium text-sm transition-all">
+                    <i class="fa-regular fa-chart-pie text-gold-400 text-base"></i>
+                    Portfolio Vault
+                </a>
+                <a href="#" onclick="showToast('Feature coming soon', 'info')" class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 font-medium text-sm transition-all group">
+                    <i class="fa-regular fa-wallet text-gray-500 group-hover:text-gold-400 transition-colors"></i>
+                    Transactions
+                </a>
+                <a href="#" onclick="showToast('Feature coming soon', 'info')" class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 font-medium text-sm transition-all group">
+                    <i class="fa-regular fa-shield-halved text-gray-500 group-hover:text-gold-400 transition-colors"></i>
+                    Compliance
+                </a>
+                <a href="#" onclick="showToast('Settings panel encrypted', 'info')" class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 font-medium text-sm transition-all group">
+                    <i class="fa-regular fa-sliders text-gray-500 group-hover:text-gold-400 transition-colors"></i>
+                    System Config
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-white/5 bg-[#070707]">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-dark-500 border border-white/10 flex items-center justify-center text-gold-400">
+                            <i class="fa-solid fa-user-tie"></i>
+                        </div>
+                        <div>
+                            <span id="display-username" class="text-sm font-semibold text-white block max-w-[100px] truncate">Admin</span>
+                            <span class="text-[10px] text-emerald-400 flex items-center gap-1 font-medium">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span> Encrypted
+                            </span>
+                        </div>
+                    </div>
+                    <button onclick="handleLogout()" class="w-8 h-8 rounded-lg bg-dark-600 hover:bg-red-950/40 text-gray-400 hover:text-red-400 flex items-center justify-center transition-all border border-white/5" title="Secure Exit">
+                        <i class="fa-regular fa-arrow-right-from-bracket text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col min-w-0">
+            
+            <header class="h-20 border-b border-white/5 bg-[#090909]/50 backdrop-blur-md flex items-center justify-between px-6 md:px-8 z-20 shrink-0">
+                <div class="flex items-center gap-4 flex-1">
+                    <h2 class="text-lg font-semibold text-white hidden sm:block">Asset Ledger</h2>
+                    <span class="bg-dark-600 border border-white/5 text-[11px] font-medium text-gray-400 px-3 py-1 rounded-full flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-gold-500 animate-ping"></span> Live Vault Trackers
+                    </span>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <div class="relative inline-block text-left">
+                        <button onclick="showToast('Notification Vault Cleared', 'success')" class="w-10 h-10 rounded-xl bg-dark-700 hover:bg-dark-600 border border-white/5 text-gray-300 flex items-center justify-center transition-all relative">
+                            <i class="fa-regular fa-bell text-sm"></i>
+                            <span class="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-gold-400 rounded-full"></span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 p-6 md:p-8 space-y-8 overflow-y-auto">
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <div class="glass rounded-2xl p-5 border border-white/5 relative overflow-hidden group hover:border-gold-500/20 transition-all">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Value Secured</span>
+                            <span class="w-8 h-8 rounded-lg bg-gold-950/30 text-gold-400 flex items-center justify-center text-sm"><i class="fa-regular fa-vault"></i></span>
+                        </div>
+                        <h3 id="stat-total-val" class="text-2xl font-bold text-white tracking-tight">$0.00</h3>
+                        <p class="text-[11px] text-emerald-400 font-medium mt-1"><i class="fa-solid fa-trend-up"></i> +4.8% Live Performance</p>
+                    </div>
+                    <div class="glass rounded-2xl p-5 border border-white/5 relative overflow-hidden group hover:border-gold-500/20 transition-all">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Asset Registries</span>
+                            <span class="w-8 h-8 rounded-lg bg-blue-950/30 text-blue-400 flex items-center justify-center text-sm"><i class="fa-regular fa-cubes"></i></span>
+                        </div>
+                        <h3 id="stat-total-count" class="text-2xl font-bold text-white tracking-tight">0</h3>
+                        <p class="text-[11px] text-gray-500 font-medium mt-1">Active verified ledger blocks</p>
+                    </div>
+                    <div class="glass rounded-2xl p-5 border border-white/5 relative overflow-hidden group hover:border-gold-500/20 transition-all">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">High Risk Index</span>
+                            <span class="w-8 h-8 rounded-lg bg-red-950/30 text-red-400 flex items-center justify-center text-sm"><i class="fa-regular fa-triangle-exclamation"></i></span>
+                        </div>
+                        <h3 id="stat-high-risk" class="text-2xl font-bold text-white tracking-tight">0</h3>
+                        <p class="text-[11px] text-red-400 font-medium mt-1">Requires standard auditing</p>
+                    </div>
+                    <div class="glass rounded-2xl p-5 border border-white/5 relative overflow-hidden group hover:border-gold-500/20 transition-all">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">System Integrity</span>
+                            <span class="w-8 h-8 rounded-lg bg-emerald-950/30 text-emerald-400 flex items-center justify-center text-sm"><i class="fa-regular fa-microchip"></i></span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white tracking-tight">99.99%</h3>
+                        <p class="text-[11px] text-emerald-400 font-medium mt-1">Operational Node Active</p>
+                    </div>
+                </div>
+
+                <div class="glass rounded-2xl border border-white/5 overflow-hidden shadow-2xl">
+                    
+                    <div class="p-5 border-b border-white/5 bg-[#090909]/40 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-3 flex-1 max-w-2xl">
+                            <div class="relative flex-1">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500"><i class="fa-regular fa-magnifying-glass text-xs"></i></span>
+                                <input type="text" id="crud-search" oninput="handleFilterChange()" class="w-full premium-input rounded-xl py-2 pl-9 pr-4 text-xs text-white" placeholder="Search ledger database by name or serial...">
+                            </div>
+                            <div class="relative min-w-[140px]">
+                                <select id="crud-filter-tier" onchange="handleFilterChange()" class="w-full premium-input rounded-xl py-2 px-3 text-xs text-white appearance-none cursor-pointer">
+                                    <option value="ALL">All Categories</option>
+                                    <option value="Alpha">Alpha Class</option>
+                                    <option value="Beta">Beta Class</option>
+                                    <option value="Omega">Omega Class</option>
+                                </select>
+                                <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 pointer-events-none"><i class="fa-regular fa-chevron-down text-[10px]"></i></span>
+                            </div>
+                            <div class="relative min-w-[140px]">
+                                <select id="crud-sort" onchange="handleFilterChange()" class="w-full premium-input rounded-xl py-2 px-3 text-xs text-white appearance-none cursor-pointer">
+                                    <option value="newest">Newest First</option>
+                                    <option value="val-desc">Value: High to Low</option>
+                                    <option value="val-asc">Value: Low to High</option>
+                                    <option value="name-asc">Name: A to Z</option>
+                                </select>
+                                <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 pointer-events-none"><i class="fa-regular fa-arrow-sort-down-up text-[10px]"></i></span>
+                            </div>
+                        </div>
+
+                        <button onclick="openCrudModal('create')" class="bg-gradient-to-r from-gold-600 to-gold-500 hover:from-gold-500 hover:to-gold-400 text-black text-xs font-bold px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md shadow-gold-600/10">
+                            <i class="fa-regular fa-plus font-bold"></i> Mint New Asset
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto w-full relative">
+                        <div id="table-skeleton" class="hidden p-6 space-y-4">
+                            <div class="h-6 bg-dark-600 rounded animate-pulse w-1/4"></div>
+                            <div class="space-y-2">
+                                <div class="h-10 bg-dark-700/50 rounded animate-pulse"></div>
+                                <div class="h-10 bg-dark-700/50 rounded animate-pulse"></div>
+                                <div class="h-10 bg-dark-700/50 rounded animate-pulse"></div>
+                            </div>
+                        </div>
+
+                        <table id="crud-table" class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-white/5 bg-[#0b0b0b] text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+                                    <th class="py-4 px-6">Asset Specification</th>
+                                    <th class="py-4 px-6">Tier Class</th>
+                                    <th class="py-4 px-6">Evaluation Value</th>
+                                    <th class="py-4 px-6">Risk Profile</th>
+                                    <th class="py-4 px-6 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="crud-table-body" class="divide-y divide-white/5 text-xs text-gray-300">
+                                </tbody>
+                        </table>
+
+                        <div id="empty-state" class="hidden flex flex-col items-center justify-center text-center p-12">
+                            <div class="w-16 h-16 rounded-full bg-dark-600 flex items-center justify-center mb-4 text-gray-600 border border-white/5">
+                                <i class="fa-regular fa-folder-open text-2xl"></i>
+                            </div>
+                            <h4 class="text-sm font-semibold text-white">No Asset Nodes Discovered</h4>
+                            <p class="text-xs text-gray-500 max-w-sm mt-1">The system matrix search query generated no valid matches inside this vault registry.</p>
+                        </div>
+                    </div>
+
+                    <div class="p-4 border-t border-white/5 bg-[#090909]/20 flex items-center justify-between text-xs text-gray-400">
+                        <span id="pagination-info">Showing index tracking logs</span>
+                        <div class="flex items-center gap-2">
+                            <button id="btn-prev-page" onclick="changePage(-1)" class="w-8 h-8 rounded-lg bg-dark-700 border border-white/5 flex items-center justify-center hover:bg-dark-600 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-all">
+                                <i class="fa-regular fa-chevron-left text-[10px]"></i>
+                            </button>
+                            <span id="page-num-display" class="px-3 py-1 bg-dark-600 text-white font-semibold rounded-md border border-white/10">1</span>
+                            <button id="btn-next-page" onclick="changePage(1)" class="w-8 h-8 rounded-lg bg-dark-700 border border-white/5 flex items-center justify-center hover:bg-dark-600 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-all">
+                                <i class="fa-regular fa-chevron-right text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass rounded-2xl p-6 border border-white/5">
+                    <h3 class="text-sm font-semibold text-white mb-4 flex items-center gap-2">
+                        <i class="fa-regular fa-rectangle-list text-gold-400"></i> Local Activity Execution Logs
+                    </h3>
+                    <div id="activity-logs" class="space-y-3 font-mono text-[11px] text-gray-500 max-h-40 overflow-y-auto pr-2">
+                        </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+
+    <div id="crud-modal" class="hidden fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+        <div class="glass-premium rounded-2xl w-full max-w-md overflow-hidden relative shadow-2xl transform scale-100 transition-all">
+            <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between">
+                <h3 id="modal-title" class="text-sm font-bold uppercase tracking-wider text-white">Mint Asset Record</h3>
+                <button onclick="closeCrudModal()" class="text-gray-400 hover:text-white"><i class="fa-regular fa-xmark"></i></button>
+            </div>
+            
+            <form id="crud-form" onsubmit="handleCrudSubmit(event)" class="p-6 space-y-4">
+                <input type="hidden" id="asset-id">
+                
+                <div>
+                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-1.5" for="asset-name">Asset Descriptor Name</label>
+                    <input type="text" id="asset-name" required class="w-full premium-input rounded-xl py-2.5 px-3.5 text-xs text-white" placeholder="e.g. Neo-Tokyo Quantum Cloud Matrix">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-1.5" for="asset-tier">Tier Category</label>
+                        <div class="relative">
+                            <select id="asset-tier" class="w-full premium-input rounded-xl py-2.5 px-3.5 text-xs text-white appearance-none cursor-pointer">
+                                <option value="Alpha">Alpha Class</option>
+                                <option value="Beta">Beta Class</option>
+                                <option value="Omega">Omega Class</option>
+                            </select>
+                            <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 pointer-events-none"><i class="fa-regular fa-chevron-down text-[10px]"></i></span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-1.5" for="asset-value">Financial Valuation ($)</label>
+                        <input type="number" id="asset-value" required min="1" step="any" class="w-full premium-input rounded-xl py-2.5 px-3.5 text-xs text-white" placeholder="1250000">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-1.5" for="asset-risk">Risk Assessment Class</label>
+                    <div class="relative">
+                        <select id="asset-risk" class="w-full premium-input rounded-xl py-2.5 px-3.5 text-xs text-white appearance-none cursor-pointer">
+                            <option value="Low">Low Static Baseline</option>
+                            <option value="Moderate">Moderate Growth Drift</option>
+                            <option value="High">High Speculative Volatility</option>
+                        </select>
+                        <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 pointer-events-none"><i class="fa-regular fa-chevron-down text-[10px]"></i></span>
+                    </div>
+                </div>
+
+                <div class="pt-4 flex items-center justify-end gap-3 border-t border-white/10">
+                    <button type="button" onclick="closeCrudModal()" class="px-4 py-2 rounded-xl bg-dark-600 hover:bg-dark-500 text-xs text-gray-300 font-medium transition-all">Cancel</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl bg-gradient-to-r from-gold-600 to-gold-500 text-xs font-bold text-black transition-all">Confirm Execution</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <div id="delete-modal" class="hidden fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm animate-fadeIn">
+        <div class="glass border-red-900/30 rounded-2xl w-full max-w-sm p-6 space-y-4 text-center shadow-2xl">
+            <div class="w-12 h-12 rounded-full bg-red-950/40 border border-red-500/30 flex items-center justify-center text-red-400 text-xl mx-auto">
+                <i class="fa-regular fa-radiation"></i>
+            </div>
+            <div>
+                <h3 class="text-sm font-bold uppercase tracking-wider text-white">Purge System Node?</h3>
+                <p class="text-xs text-gray-400 mt-2">Are you sure you want to permanently delete this asset? This action cannot be reversed within the local cluster.</p>
+            </div>
+            <div class="flex items-center justify-center gap-3 pt-2">
+                <button onclick="closeDeleteModal()" class="flex-1 py-2 rounded-xl bg-dark-600 hover:bg-dark-500 text-xs text-gray-300 font-medium transition-all">Abort</button>
+                <button id="btn-confirm-delete" class="flex-1 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-xs text-white font-bold transition-all">Purge Permanently</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2.5 max-w-sm w-full pointer-events-none">
+        </div>
+
+
+    <script>
+        // --- SEED SEVENTH INITIAL DATA STATE ---
+        let assets = [
+            { id: 101, name: "Aetherius Sovereign Fund", tier: "Alpha", value: 12500000, risk: "Low", created: "2026-06-28 14:22" },
+            { id: 102, name: "Hyperion Orbital Mining Rights", tier: "Omega", value: 42300000, risk: "High", created: "2026-07-01 09:11" },
+            { id: 103, name: "Helios Renewable Energy Matrix", tier: "Beta", value: 6800000, risk: "Moderate", created: "2026-07-03 18:45" },
+            { id: 104, name: "Chronos High-Freq Quantum Nodes", tier: "Alpha", value: 19100000, risk: "Low", created: "2026-07-04 11:30" },
+            { id: 105, name: "Elysium Real Estate Node B", tier: "Beta", value: 3200000, risk: "Moderate", created: "2026-07-05 16:02" }
+        ];
+
+        let filteredAssets = [...assets];
+        let targetDeleteId = null;
+        let currentPage = 1;
+        const rowsPerPage = 4;
+
+        // --- AUTHENTICATION MODULE ---
+        function handleLogin(event) {
+            event.preventDefault();
+            const usernameInput = document.getElementById("username").value.trim();
+            const passwordInput = document.getElementById("password").value;
+            const errorDiv = document.getElementById("auth-error");
+            const errorMsg = document.getElementById("auth-error-msg");
+
+            errorDiv.classList.add("hidden");
+
+            // --- STRICT REQ BLOCK admin123 GUARDRAIL ---
+            if (passwordInput === "admin123") {
+                errorMsg.innerText = "This password is not allowed. Please use another password.";
+                errorDiv.classList.remove("hidden");
+                logActivity("CRITICAL AUTH ATTEMPT: Blocked password variant 'admin123'");
+                return;
+            }
+
+            // Sanitize username display against simple XSS payloads
+            const sanitizedUser = usernameInput.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            
+            // Generate Session Mock JWT Structure saved in sessionStorage
+            const sessionPayload = {
+                token: "aura_mock_jwt_node_" + btoa(sanitizedUser + Date.now()),
+                user: sanitizedUser,
+                authenticatedAt: new Date().toISOString()
+            };
+            
+            sessionStorage.setItem("aura_session", JSON.stringify(sessionPayload));
+            showToast(`Secure node handshaking established. Welcome ${sanitizedUser}.`, "success");
+            
+            logActivity(`AUTH SUCCESS: Node session initialized for target [${sanitizedUser}]`);
+            initAppLayout();
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem("aura_session");
+            document.getElementById("auth-page").classList.remove("hidden");
+            document.getElementById("dashboard-layout").classList.add("hidden");
+            showToast("Session disconnected securely.", "info");
+        }
+
+        function checkSession() {
+            const activeSession = sessionStorage.getItem("aura_session");
+            if (activeSession) {
+                initAppLayout();
+            }
+        }
+
+        function initAppLayout() {
+            const sessionData = JSON.parse(sessionStorage.getItem("aura_session"));
+            document.getElementById("auth-page").classList.add("hidden");
+            document.getElementById("dashboard-layout").classList.remove("hidden");
+            document.getElementById("display-username").innerText = sessionData.user;
+            
+            // Dynamic initial render
+            executeTablePipeline();
+        }
+
+        // --- CRUD ENGINE CORE PIPELINE ---
+        function executeTablePipeline() {
+            simulateSkeletonLoad(() => {
+                applyFilterAndSort();
+                renderTable();
+                calculateMetrics();
+            });
+        }
+
+        function applyFilterAndSort() {
+            const searchVal = document.getElementById("crud-search").value.toLowerCase().trim();
+            const filterTier = document.getElementById("crud-filter-tier").value;
+            const sortVal = document.getElementById("crud-sort").value;
+
+            filteredAssets = assets.filter(item => {
+                const matchesSearch = item.name.toLowerCase().includes(searchVal) || String(item.id).includes(searchVal);
+                const matchesTier = (filterTier === "ALL") || (item.tier === filterTier);
+                return matchesSearch && matchesTier;
+            });
+
+            if (sortVal === "newest") {
+                filteredAssets.sort((a,b) => b.id - a.id);
+            } else if (sortVal === "val-desc") {
+                filteredAssets.sort((a,b) => b.value - a.value);
+            } else if (sortVal === "val-asc") {
+                filteredAssets.sort((a,b) => a.value - b.value);
+            } else if (sortVal === "name-asc") {
+                filteredAssets.sort((a,b) => a.name.localeCompare(b.name));
+            }
+        }
+
+        function renderTable() {
+            const body = document.getElementById("crud-table-body");
+            const emptyState = document.getElementById("empty-state");
+            const table = document.getElementById("crud-table");
+            
+            body.innerHTML = "";
+            
+            if (filteredAssets.length === 0) {
+                emptyState.classList.remove("hidden");
+                table.classList.add("hidden");
+                updatePaginationControls(0);
+                return;
+            }
+            
+            emptyState.classList.add("hidden");
+            table.classList.remove("hidden");
+
+            // Handle Pagination Calculations
+            const totalItems = filteredAssets.length;
+            const totalPages = Math.ceil(totalItems / rowsPerPage);
+            if (currentPage > totalPages) currentPage = Math.max(1, totalPages);
+            
+            const startIndex = (currentPage - 1) * rowsPerPage;
+            const endIndex = Math.min(startIndex + rowsPerPage, totalItems);
+            const paginatedItems = filteredAssets.slice(startIndex, endIndex);
+
+            paginatedItems.forEach(asset => {
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-white/[0.02] border-b border-white/5 transition-colors group";
+                
+                // Color mapping for dynamic badge UI design 
+                const riskColor = asset.risk === 'High' ? 'text-red-400 bg-red-950/30 border-red-900/50' : 
+                                  asset.risk === 'Moderate' ? 'text-amber-400 bg-amber-950/30 border-amber-900/50' : 
+                                  'text-emerald-400 bg-emerald-950/30 border-emerald-900/50';
+
+                tr.innerHTML = `
+                    <td class="py-4 px-6 font-medium text-white">
+                        <div class="flex flex-col">
+                            <span class="text-sm font-semibold tracking-wide">${escapeHTML(asset.name)}</span>
+                            <span class="text-[10px] text-gray-500 font-mono mt-0.5">HEXID: #${asset.id} // Logged: ${asset.created}</span>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <span class="px-2.5 py-1 text-[10px] uppercase font-bold tracking-widest rounded-md bg-dark-600 text-gray-300 border border-white/10">${asset.tier}</span>
+                    </td>
+                    <td class="py-4 px-6 text-sm font-semibold text-gold-400 font-mono">
+                        $${asset.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                    </td>
+                    <td class="py-4 px-6">
+                        <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full border ${riskColor}">${asset.risk}</span>
+                    </td>
+                    <td class="py-4 px-6 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                            <button onclick="openCrudModal('update', ${asset.id})" class="w-8 h-8 rounded-lg bg-dark-700 hover:bg-dark-600 text-gray-300 border border-white/5 flex items-center justify-center transition-all" title="Modify Registry">
+                                <i class="fa-regular fa-pen-to-square text-xs"></i>
+                            </button>
+                            <button onclick="triggerDeleteConfirmation(${asset.id})" class="w-8 h-8 rounded-lg bg-dark-700 hover:bg-red-950/40 text-gray-400 hover:text-red-400 border border-white/5 flex items-center justify-center transition-all" title="Purge Ledger Block">
+                                <i class="fa-regular fa-trash text-xs"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                body.appendChild(tr);
+            });
+
+            updatePaginationControls(totalItems, startIndex, endIndex);
+        }
+
+        function calculateMetrics() {
+            const totalVal = assets.reduce((acc, curr) => acc + parseFloat(curr.value), 0);
+            const highRiskCount = assets.filter(a => a.risk === "High").length;
+            
+            document.getElementById("stat-total-val").innerText = "$" + totalVal.toLocaleString(undefined, {maximumFractionDigits:0});
+            document.getElementById("stat-total-count").innerText = assets.length;
+            document.getElementById("stat-high-risk").innerText = highRiskCount;
+        }
+
+        function handleFilterChange() {
+            executeTablePipeline();
+        }
+
+        // --- PAGINATION MODULE ---
+        function updatePaginationControls(totalItems, start = 0, end = 0) {
+            document.getElementById("page-num-display").innerText = currentPage;
+            const btnPrev = document.getElementById("btn-prev-page");
+            const btnNext = document.getElementById("btn-next-page");
+
+            btnPrev.disabled = (currentPage === 1);
+            btnNext.disabled = (currentPage * rowsPerPage >= totalItems);
+            
+            if (totalItems === 0) {
+                document.getElementById("pagination-info").innerText = "No entries tracking.";
+            } else {
+                document.getElementById("pagination-info").innerText = `Displaying ${start + 1} - ${end} of ${totalItems} vault records`;
+            }
+        }
+
+        function changePage(direction) {
+            currentPage += direction;
+            renderTable();
+        }
+
+        // --- C.R.U.D. RECORD MODAL LOGIC MANAGEMENT ---
+        function openCrudModal(mode, id = null) {
+            const modal = document.getElementById("crud-modal");
+            const form = document.getElementById("crud-form");
+            const title = document.getElementById("modal-title");
+            
+            form.reset();
+            document.getElementById("asset-id").value = "";
+            
+            if (mode === "create") {
+                title.innerText = "Mint Asset Block Registry";
+            } else if (mode === "update") {
+                title.innerText = "Update Existing Registry Block";
+                const activeAsset = assets.find(a => a.id === id);
+                if (!activeAsset) return;
+
+                document.getElementById("asset-id").value = activeAsset.id;
+                document.getElementById("asset-name").value = activeAsset.name;
+                document.getElementById("asset-tier").value = activeAsset.tier;
+                document.getElementById("asset-value").value = activeAsset.value;
+                document.getElementById("asset-risk").value = activeAsset.risk;
+            }
+            modal.classList.remove("hidden");
+        }
+
+        function closeCrudModal() {
+            document.getElementById("crud-modal").classList.add("hidden");
+        }
+
+        function handleCrudSubmit(event) {
+            event.preventDefault();
+            const id = document.getElementById("asset-id").value;
+            const name = document.getElementById("asset-name").value.trim();
+            const tier = document.getElementById("asset-tier").value;
+            const value = parseFloat(document.getElementById("asset-value").value);
+            const risk = document.getElementById("asset-risk").value;
+            
+            const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 16);
+
+            if (id) {
+                // UPDATE PIPELINE TASK
+                const targetIdx = assets.findIndex(a => a.id == id);
+                if (targetIdx !== -1) {
+                    assets[targetIdx] = { ...assets[targetIdx], name, tier, value, risk };
+                    showToast("Asset record matrix updated successfully.", "success");
+                    logActivity(`LEDGER EDIT: Updated matrix node #${id} [${name}]`);
+                }
+            } else {
+                // CREATE PIPELINE TASK
+                const newId = assets.length > 0 ? Math.max(...assets.map(a => a.id)) + 1 : 101;
+                assets.push({ id: newId, name, tier, value, risk, created: timestamp });
+                showToast("New unique asset node minted into system ledger.", "success");
+                logActivity(`LEDGER MINT: Created new cluster node #${newId} [${name}]`);
+            }
+
+            closeCrudModal();
+            executeTablePipeline();
+        }
+
+        // --- PURGE / DELETE OPERATIONAL ARCHITECTURE ---
+        function triggerDeleteConfirmation(id) {
+            targetDeleteId = id;
+            document.getElementById("delete-modal").classList.remove("hidden");
+        }
+
+        function closeDeleteModal() {
+            document.getElementById("delete-modal").classList.add("hidden");
+            targetDeleteId = null;
+        }
+
+        document.getElementById("btn-confirm-delete").addEventListener("click", () => {
+            if (targetDeleteId) {
+                const assetName = assets.find(a => a.id === targetDeleteId)?.name || "Unknown";
+                assets = assets.filter(a => a.id !== targetDeleteId);
+                showToast("System record successfully purged from database stack.", "error");
+                logActivity(`LEDGER PURGE: Dropped active record node #${targetDeleteId} [${assetName}]`);
+                closeDeleteModal();
+                executeTablePipeline();
+            }
+        });
+
+        // --- UI MICROSTRUCTURE ACTIONS: TOAST & SKELETON LAYER ---
+        function showToast(message, type = "success") {
+            const container = document.getElementById("toast-container");
+            const toast = document.createElement("div");
+            
+            let icon = '<i class="fa-regular fa-circle-check text-emerald-400"></i>';
+            let border = 'border-emerald-500/20';
+            if (type === "error") {
+                icon = '<i class="fa-regular fa-triangle-exclamation text-red-400"></i>';
+                border = 'border-red-500/20';
+            } else if (type === "info") {
+                icon = '<i class="fa-regular fa-circle-info text-blue-400"></i>';
+                border = 'border-blue-500/20';
+            }
+
+            toast.className = `glass ${border} p-4 rounded-xl shadow-xl pointer-events-auto flex items-center gap-3 text-xs text-white transform transition-all duration-300 translate-y-2 opacity-0`;
+            toast.innerHTML = `
+                <div class="shrink-0 text-base">${icon}</div>
+                <div class="flex-1 font-medium">${escapeHTML(message)}</div>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Trigger Entrance Animation Smoothly
+            setTimeout(() => {
+                toast.classList.remove("translate-y-2", "opacity-0");
+            }, 10);
+
+            // Exit Clean Routine
+            setTimeout(() => {
+                toast.classList.add("opacity-0", "translate-y-2");
+                setTimeout(() => { toast.remove(); }, 300);
+            }, 3500);
+        }
+
+        function simulateSkeletonLoad(callback) {
+            const table = document.getElementById("crud-table");
+            const skeleton = document.getElementById("table-skeleton");
+            const emptyState = document.getElementById("empty-state");
+            
+            table.classList.add("hidden");
+            emptyState.classList.add("hidden");
+            skeleton.classList.remove("hidden");
+
+            setTimeout(() => {
+                skeleton.classList.add("hidden");
+                callback();
+            }, 300); // UI micro-responsiveness feedback
+        }
+
+        function logActivity(message) {
+            const logs = document.getElementById("activity-logs");
+            const timestamp = new Date().toISOString().substring(11, 19);
+            const div = document.createElement("div");
+            div.className = "flex gap-2 hover:text-gray-300 transition-colors";
+            div.innerHTML = `<span class="text-gold-500 shrink-0">[${timestamp}]</span> <span>${escapeHTML(message)}</span>`;
+            logs.insertBefore(div, logs.firstChild);
+        }
+
+        // --- SECURITY INPUT UTILITY FOR XSS ---
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+
+        // --- LIFE TRIGGER INITIALIZATION ENGINE ---
+        window.addEventListener("DOMContentLoaded", () => {
+            checkSession();
+            logActivity("Aura Secure Cluster Core Boot Sequence Complete.");
+        });
+    </script>
+</body>
+</html> 
